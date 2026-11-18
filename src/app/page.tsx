@@ -6,7 +6,7 @@ import HowItWorks from "@/components/home/HowItWorks";
 import FeaturedPizzas from "@/components/home/FeaturedPizzas";
 import PartnerCTA from "@/components/home/PartnerCTA";
 import Testimonials from "@/components/home/Testimonials";
-
+import Footer from "@/components/shared/Footer";
 
 export default function Home() {
   return (
@@ -23,6 +23,7 @@ export default function Home() {
         <PartnerCTA />
 
       </main>
+      <Footer />
     </>
   );
 }
