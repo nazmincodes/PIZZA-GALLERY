@@ -126,8 +126,7 @@ export default function Footer() {
         {/* Copyright */}
         <div className="flex flex-col items-center justify-between gap-4 pt-7 text-center sm:flex-row">
           <p className="text-sm text-gray-500">
-            © {new Date().getFullYear()} PizzaHub. All rights reserved.
-          </p>
+            © 2026 PizzaHub. All rights reserved.          </p>
 
           <p className="text-sm text-gray-500">
             Made with <span className="text-orange-500">♥</span> for Pizza Lovers.
