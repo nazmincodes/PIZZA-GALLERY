@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Pizza, ArrowUpRight } from "lucide-react";
+import { Pizza, ArrowUpRight, MapPin, Mail, Phone } from "lucide-react";
 import { FaFacebookF, FaInstagram } from "react-icons/fa6";
 
 const quickLinks = [
@@ -19,8 +19,6 @@ export default function Footer() {
   return (
     <footer className="bg-[#1E1E1E] text-white">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-
-        {/* Main Footer */}
         <div className="grid gap-12 border-b border-white/10 pb-12 sm:grid-cols-2 lg:grid-cols-4">
 
           {/* Brand Information */}
@@ -61,14 +59,14 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="mb-6 text-lg font-bold">Quick Links</h3>
+            <h3 className="mb-5 text-lg font-semibold">Quick Links</h3>
 
             <ul className="space-y-4">
               {quickLinks.map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-400 transition hover:text-orange-400"
+                    className="text-sm text-gray-400 transition hover:text-orange-500"
                   >
                     {link.name}
                   </Link>
@@ -77,16 +75,16 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Account */}
+          {/* Account Links */}
           <div>
-            <h3 className="mb-6 text-lg font-bold">Your Account</h3>
+            <h3 className="mb-5 text-lg font-semibold">Your Account</h3>
 
             <ul className="space-y-4">
               {accountLinks.map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-400 transition hover:text-orange-400"
+                    className="text-sm text-gray-400 transition hover:text-orange-500"
                   >
                     {link.name}
                   </Link>
@@ -97,19 +95,30 @@ export default function Footer() {
 
           {/* Contact Information */}
           <div>
-            <h3 className="mb-6 text-lg font-bold">Need Help?</h3>
+            <h3 className="mb-5 text-lg font-semibold">Get In Touch</h3>
 
-            <p className="text-sm leading-7 text-gray-400">
-              Have questions about ordering or joining PizzaHub?
-              We are here to help.
-            </p>
+            <ul className="space-y-5 text-sm text-gray-400">
+              <li className="flex items-start gap-3">
+                <MapPin size={19} className="shrink-0 text-orange-500" />
+                <span>Dhaka, Bangladesh</span>
+              </li>
+
+              <li className="flex items-center gap-3">
+                <Mail size={19} className="shrink-0 text-orange-500" />
+                <span>Contact information coming soon</span>
+              </li>
+
+              <li className="flex items-center gap-3">
+                <Phone size={19} className="shrink-0 text-orange-500" />
+                <span>Support information coming soon</span>
+              </li>
+            </ul>
 
             <Link
-              href="/"
-              className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-orange-400 transition hover:text-orange-300"
+              href="/menu"
+              className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-orange-500 transition hover:text-orange-400"
             >
-              Explore PizzaHub
-              <ArrowUpRight size={17} />
+              Explore Menu <ArrowUpRight size={17} />
             </Link>
           </div>
         </div>
