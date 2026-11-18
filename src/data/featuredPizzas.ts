@@ -5,6 +5,8 @@ export type PizzaType = {
   price: number;
   category: string;
   image: string;
+  location?: string;
+  rating?: number;
   badge?: string;
 };
 
