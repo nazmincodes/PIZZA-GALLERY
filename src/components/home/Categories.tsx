@@ -57,7 +57,7 @@ const categories = [
 // Categories Component
 export default function Categories() {
   return (
-    <section className="bg-[#FFF8F0] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+    <section className="bg-[#FFF8F0] px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
       <div className="mx-auto max-w-7xl">
 
         {/* Section Heading */}
