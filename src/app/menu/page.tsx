@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -13,9 +12,28 @@ import {
 
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
-import { menuItems } from "@/data/menuItems";
+
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+interface Pizza {
+  _id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  image: string;
+  location: string;
+  restaurantName: string;
+  rating: number;
+  isFeatured: boolean;
+}
 
 export default function MenuPage() {
+  const [menuItems, setMenuItems] = useState<Pizza[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [location, setLocation] = useState("All");
@@ -27,6 +45,34 @@ export default function MenuPage() {
     "Meat Lovers",
     "Specialty",
   ];
+
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await fetch(`${API_URL}/api/menu/public`);
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || "Failed to load menu.");
+        }
+
+        setMenuItems(result.menuItems || []);
+      } catch (error) {
+        setError(
+          error instanceof Error
+            ? error.message
+            : "Something went wrong."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMenuItems();
+  }, []);
 
   const locations = [
     "All",
@@ -52,7 +98,6 @@ export default function MenuPage() {
       <Navbar />
 
       <main className="flex-1 bg-[#FFF8F0]">
-        {/* Page Header */}
         <section className="bg-gradient-to-br from-red-300 via-[#FFF8F0] to-orange-100 px-4 py-16 text-center sm:py-20">
           <p className="mb-3 text-sm font-semibold uppercase tracking-[3px] text-orange-600">
             Discover Your Favorite
@@ -67,9 +112,7 @@ export default function MenuPage() {
           </p>
         </section>
 
-        {/* Menu Content */}
         <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
-          {/* Search */}
           <div className="mb-8 flex flex-col gap-5 rounded-2xl border border-orange-100 bg-white p-5 shadow-sm lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h2 className="text-xl font-bold text-gray-900">
@@ -97,7 +140,6 @@ export default function MenuPage() {
             </div>
           </div>
 
-          {/* Filters */}
           <div className="mb-8 grid gap-5 md:grid-cols-[1fr_220px] md:items-end">
             <div>
               <div className="mb-3 flex items-center gap-2">
@@ -149,7 +191,6 @@ export default function MenuPage() {
             </div>
           </div>
 
-          {/* Results */}
           <div className="mb-6 flex items-center justify-between">
             <h2 className="text-xl font-bold text-gray-900">
               All Pizzas
@@ -160,26 +201,42 @@ export default function MenuPage() {
             </p>
           </div>
 
-          {/* Pizza Cards */}
-          {filteredPizzas.length > 0 ? (
+          {loading ? (
+            <div className="py-20 text-center">
+              <p className="text-lg font-semibold text-orange-600">
+                Loading pizzas...
+              </p>
+            </div>
+          ) : error ? (
+            <div className="rounded-2xl bg-white px-5 py-16 text-center">
+              <h3 className="text-xl font-bold text-red-600">
+                Failed to Load Menu
+              </h3>
+              <p className="mt-2 text-sm text-gray-500">{error}</p>
+            </div>
+          ) : filteredPizzas.length > 0 ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {filteredPizzas.map((pizza) => (
                 <article
-                  key={pizza.id}
+                  key={pizza._id}
                   className="group overflow-hidden rounded-2xl border border-orange-100 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
                 >
                   <div className="relative h-52 overflow-hidden">
-                    <Image
-                      src={pizza.image}
-                      alt={pizza.name}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                      className="object-cover transition duration-500 group-hover:scale-110"
-                    />
+                    {pizza.image ? (
+                      <img
+                        src={pizza.image}
+                        alt={pizza.name}
+                        className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center bg-orange-50 text-orange-300">
+                        No Image
+                      </div>
+                    )}
 
-                    {pizza.badge && (
+                    {pizza.isFeatured && (
                       <span className="absolute left-3 top-3 rounded-full bg-orange-500 px-3 py-1 text-xs font-semibold text-white">
-                        {pizza.badge}
+                        Featured
                       </span>
                     )}
                   </div>
@@ -190,7 +247,7 @@ export default function MenuPage() {
                         {pizza.category}
                       </span>
 
-                      {pizza.rating && (
+                      {pizza.rating > 0 && (
                         <span className="flex items-center gap-1 text-sm font-semibold text-gray-700">
                           <Star
                             size={15}
@@ -220,7 +277,7 @@ export default function MenuPage() {
                       </p>
 
                       <Link
-                        href={`/menu/${pizza.id}`}
+                        href={`/menu/${pizza._id}`}
                         className="inline-flex items-center gap-2 rounded-lg bg-[#252525] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-500"
                       >
                         Details
