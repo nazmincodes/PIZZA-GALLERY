@@ -1,0 +1,46 @@
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\approvals\page.tsx:97  // Statistics
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\approvals\page.tsx:206  {/* Statistics */}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\approvals\page.tsx:383  ৳{item.price?.toLocaleString() ?? 0}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\my-items\page.tsx:303  {/* Statistics */}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\my-items\page.tsx:445  ৳{item.price}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\my-items\page.tsx:569  Price (৳)
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\my-orders\page.tsx:197  {/* Statistics */}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\my-orders\page.tsx:200  { label: "Total Orders", value: orders.length, icon: Package },
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\my-orders\page.tsx:352  ৳{order.totalPrice}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\orders\page.tsx:173  const statistics = [
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\orders\page.tsx:175  label: "Total Orders",
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\orders\page.tsx:228  {/* Statistics */}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\orders\page.tsx:230  {statistics.map((stat) => {
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\orders\page.tsx:416  Total: ৳{order.totalPrice}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\transactions\page.tsx:98  // Calculate transaction statistics
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\transactions\page.tsx:113  const totalRevenue = successfulTransactions.reduce(
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\transactions\page.tsx:153  {/* Statistics */}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\transactions\page.tsx:156  {/* Total Revenue */}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\transactions\page.tsx:159  <p className="text-sm text-gray-500">Total Revenue</p>
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\transactions\page.tsx:164  ৳{totalRevenue.toLocaleString("en-BD")}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\transactions\page.tsx:371  ৳{transaction.amount.toLocaleString("en-BD")}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\users\page.tsx:188  {/* Statistics */}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\(dashboard)\dashboard\users\page.tsx:192  <p className="text-sm text-gray-500">Total Users</p>
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\menu\page.tsx:306  ৳{pizza.price}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\app\menu\[id]\page.tsx:185  ৳{pizza.price}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\components\dashboard\AdminDashboard.tsx:76  apiRequest("/api/admin/vendors/statistics"),
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\components\dashboard\AdminDashboard.tsx:77  apiRequest("/api/admin/menu/statistics"),
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\components\dashboard\AdminDashboard.tsx:79  apiRequest("/api/admin/transactions/statistics"),
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\components\dashboard\AdminDashboard.tsx:85  vendorsResponse.statistics || vendorsResponse;
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\components\dashboard\AdminDashboard.tsx:88  menuStatsResponse.statistics || menuStatsResponse;
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\components\dashboard\AdminDashboard.tsx:91  transactionResponse.statistics || transactionResponse;
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\components\dashboard\AdminDashboard.tsx:137  title: "Total Users",
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\components\dashboard\AdminDashboard.tsx:209  {/* Statistics */}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\components\dashboard\AdminDashboard.tsx:422  ? `৳${item.price.toLocaleString()}`
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\components\dashboard\CustomerDashboard.tsx:23  title: "Total Orders",
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\components\dashboard\CustomerDashboard.tsx:29  title: "Pending Orders",
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\components\dashboard\CustomerDashboard.tsx:114  {/* Statistics */}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\components\dashboard\CustomerDashboard.tsx:217  ৳{order.price}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\components\dashboard\VendorDashboard.tsx:29  title: "Total Orders",
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\components\dashboard\VendorDashboard.tsx:35  title: "Pending Orders",
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\components\dashboard\VendorDashboard.tsx:113  {/* Statistics */}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\components\dashboard\VendorDashboard.tsx:271  ৳{order.price}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\components\home\FeaturedPizzas.tsx:185  ৳{pizza.price}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\components\menu\PizzaOrderForm.tsx:202  : `Place Order · ৳${totalPrice}`}
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\components\menu\PizzaOrderForm.tsx:274  <span>৳{pizza.price}</span>
+C:\Users\MI\OneDrive\Pictures\projects\pizzahub-client\src\components\menu\PizzaOrderForm.tsx:288  ৳{totalPrice}

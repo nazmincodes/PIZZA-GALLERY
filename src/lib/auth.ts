@@ -2,17 +2,43 @@ import { betterAuth } from "better-auth";
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "@better-auth/mongo-adapter";
 import { sendEmail } from "@/lib/email";
+import { jwt, admin } from "better-auth/plugins";
 
-const client = new MongoClient(process.env.MONGODB_URL!)
+const client = new MongoClient(process.env.MONGODB_URL!);
 const db = client.db("pizza");
 
 export const auth = betterAuth({
+    plugins: [
+        admin({
+            defaultRole: "customer",
+            adminRoles: ["admin"],
+            bannedUserMessage:
+                "Your account has been blocked. Please contact PizzaHub support.",
+        }),
+
+        jwt({
+            jwt: {
+                issuer: "http://localhost:3000",
+                audience: "http://localhost:3000",
+                expirationTime: "15m",
+
+                definePayload: ({ user }) => ({
+                    id: user.id,
+                    email: user.email,
+                    role: user.role,
+                }),
+            },
+        }),
+    ],
 
     databaseHooks: {
         user: {
             create: {
                 before: async (user) => {
-                    const role = user.role === "vendor" ? "vendor" : "customer";
+                    const role =
+                        user.accountType === "vendor"
+                            ? "vendor"
+                            : "customer";
 
                     return {
                         data: {
@@ -33,29 +59,26 @@ export const auth = betterAuth({
                 to: user.email,
                 subject: "Reset Your PizzaHub Password",
                 text: `
-                Hello ${user.name},
+Hello ${user.name},
 
-                We received a request to reset your PizzaHub password.
+We received a request to reset your PizzaHub password.
 
-                Click the link below to reset your password:
+${url}
 
-                ${url}
-
-                If you did not request this, please ignore this email.
-
-                Thank you,
-                PizzaHub Team
-      `,
+Thank you,
+PizzaHub Team
+                `,
             });
         },
     },
+
     user: {
         additionalFields: {
-            role: {
-                type: ["customer", "vendor"],
+            accountType: {
+                type: "string",
                 required: false,
                 defaultValue: "customer",
-                input: true, // সাইন-আপের সময় ক্লায়েন্ট থেকে role পাঠানো যাবে
+                input: true,
             },
         },
     },
@@ -73,6 +96,7 @@ export const auth = betterAuth({
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
         },
     },
+
     database: mongodbAdapter(db, {
         client,
     }),

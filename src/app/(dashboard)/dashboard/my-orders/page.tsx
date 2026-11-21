@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -67,26 +68,40 @@ export default function MyOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
 
-  const fetchOrders = async () => {
-    try {
-      setLoading(true);
-
-      const result = await apiRequest("/api/orders/my-orders");
-
-      setOrders(result.orders || []);
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to load orders."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Fetch Orders
   useEffect(() => {
-    fetchOrders();
+    let isMounted = true;
+
+    const loadOrders = async () => {
+      try {
+        const result = await apiRequest("/api/orders/my-orders");
+
+        if (isMounted) {
+          setOrders(result.orders || []);
+        }
+      } catch (error) {
+        if (isMounted) {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Failed to load orders."
+          );
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadOrders();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
+  // Cancel Order
   const handleCancelOrder = async (id: string) => {
     try {
       setCancellingId(id);
@@ -106,7 +121,9 @@ export default function MyOrdersPage() {
       toast.success("Order cancelled successfully!");
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to cancel order."
+        error instanceof Error
+          ? error.message
+          : "Failed to cancel order."
       );
     } finally {
       setCancellingId(null);
@@ -184,7 +201,11 @@ export default function MyOrdersPage() {
               { label: "Pending", value: pendingOrders, icon: Clock },
               { label: "Active", value: acceptedOrders, icon: CheckCircle },
               { label: "Delivered", value: deliveredOrders, icon: PackageCheck },
-              { label: "Rejected / Cancelled", value: rejectedOrders, icon: XCircle },
+              {
+                label: "Rejected / Cancelled",
+                value: rejectedOrders,
+                icon: XCircle,
+              },
             ].map((item) => (
               <div
                 key={item.label}
@@ -196,6 +217,7 @@ export default function MyOrdersPage() {
                   </p>
                   <item.icon size={20} className="text-[#F77F00]" />
                 </div>
+
                 <h2 className="mt-4 text-2xl font-bold text-[#252525]">
                   {loading ? "..." : item.value}
                 </h2>
@@ -203,13 +225,14 @@ export default function MyOrdersPage() {
             ))}
           </div>
 
-          {/* Search */}
+          {/* Search and Filter */}
           <div className="mb-6 rounded-2xl border border-orange-100 bg-white p-5 shadow-sm">
             <div className="relative mb-5 w-full md:max-w-md">
               <Search
                 size={19}
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
               />
+
               <Input
                 placeholder="Search pizza, vendor ID or order ID..."
                 value={search}
@@ -231,7 +254,9 @@ export default function MyOrdersPage() {
                       : ""
                   }
                 >
-                  {filter === "All" ? "All" : formatStatus(filter as OrderStatus)}
+                  {filter === "All"
+                    ? "All"
+                    : formatStatus(filter as OrderStatus)}
                 </Button>
               ))}
             </div>
@@ -264,6 +289,7 @@ export default function MyOrdersPage() {
                           <p className="text-xs font-medium text-gray-400">
                             ORDER ID: {order._id}
                           </p>
+
                           <h3 className="mt-1 text-xl font-bold text-[#252525]">
                             {order.pizzaName}
                           </h3>
@@ -282,29 +308,46 @@ export default function MyOrdersPage() {
 
                       <div className="grid gap-3 text-sm text-gray-500 sm:grid-cols-2">
                         <p className="flex items-start gap-2">
-                          <MapPin size={16} className="mt-0.5 shrink-0 text-[#F77F00]" />
+                          <MapPin
+                            size={16}
+                            className="mt-0.5 shrink-0 text-[#F77F00]"
+                          />
                           {order.deliveryAddress}
                         </p>
 
                         <p className="flex items-center gap-2">
-                          <CalendarDays size={16} className="shrink-0 text-[#F77F00]" />
-                          Delivery: {new Date(order.deliveryDate).toLocaleDateString()}
+                          <CalendarDays
+                            size={16}
+                            className="shrink-0 text-[#F77F00]"
+                          />
+                          Delivery:{" "}
+                          {new Date(order.deliveryDate).toLocaleDateString()}
                         </p>
 
                         <p className="flex items-center gap-2">
-                          <ShoppingBag size={16} className="shrink-0 text-[#F77F00]" />
+                          <ShoppingBag
+                            size={16}
+                            className="shrink-0 text-[#F77F00]"
+                          />
                           Quantity: {order.quantity}
                         </p>
 
                         <p className="flex items-center gap-2">
-                          <Truck size={16} className="shrink-0 text-[#F77F00]" />
-                          Ordered: {new Date(order.createdAt).toLocaleDateString()}
+                          <Truck
+                            size={16}
+                            className="shrink-0 text-[#F77F00]"
+                          />
+                          Ordered:{" "}
+                          {new Date(order.createdAt).toLocaleDateString()}
                         </p>
                       </div>
 
                       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4">
                         <div>
-                          <p className="text-xs text-gray-400">Total Amount</p>
+                          <p className="text-xs text-gray-400">
+                            Total Amount
+                          </p>
+
                           <p className="text-xl font-extrabold text-[#F77F00]">
                             ৳{order.totalPrice}
                           </p>
@@ -320,6 +363,7 @@ export default function MyOrdersPage() {
                               className="border-red-200 text-red-600 hover:bg-red-50"
                             >
                               <Ban size={15} className="mr-1" />
+
                               {cancellingId === order._id
                                 ? "Cancelling..."
                                 : "Cancel Order"}
@@ -342,13 +386,19 @@ export default function MyOrdersPage() {
               ))
             ) : (
               <div className="rounded-2xl border border-dashed border-orange-200 bg-white px-5 py-16 text-center">
-                <Package size={48} className="mx-auto mb-4 text-[#F77F00]" />
+                <Package
+                  size={48}
+                  className="mx-auto mb-4 text-[#F77F00]"
+                />
+
                 <h3 className="text-xl font-bold text-[#252525]">
                   No Orders Found
                 </h3>
+
                 <p className="mt-2 text-sm text-gray-500">
                   You haven't placed any matching orders yet.
                 </p>
+
                 <Link href="/menu">
                   <Button className="mt-4 bg-[#F77F00] hover:bg-[#e66f00]">
                     Explore Menu

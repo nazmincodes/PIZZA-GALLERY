@@ -3,64 +3,69 @@ import { redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth";
 
+import Navbar from "@/components/shared/Navbar";
+import Footer from "@/components/shared/Footer";
+
+import CustomerDashboard from "@/components/dashboard/CustomerDashboard";
+import VendorDashboard from "@/components/dashboard/VendorDashboard";
+import AdminDashboard from "@/components/dashboard/AdminDashboard";
+
 export default async function DashboardPage() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
-  // Login না থাকলে Sign In পেজে পাঠাবে
+  // Redirect if user is not logged in
   if (!session) {
     redirect("/sign-in");
   }
 
   const user = session.user;
+
+  // Safely read user role
   const role = user.role;
 
   return (
-    <main className="min-h-screen bg-[#FFF8F0] p-6 md:p-10">
-      <div className="mx-auto max-w-6xl">
+    <>
+      <Navbar />
 
-        <div className="rounded-2xl bg-white p-8 shadow-sm">
-          <p className="text-sm font-medium text-[#F77F00]">
-            PizzaHub Dashboard
-          </p>
+      <main className="min-h-screen bg-[#FFF8F0]">
+        <div className="mx-auto max-w-6xl px-6 py-10">
 
-          <h1 className="mt-3 text-3xl font-bold text-[#252525]">
-            Welcome, {user.name}!
-          </h1>
-
-          {role === "vendor" ? (
-            <div className="mt-5">
-              <h2 className="text-xl font-semibold text-[#252525]">
-                Vendor Dashboard
-              </h2>
-
-              <p className="mt-2 text-gray-500">
-                Manage your pizza shop, menu items and customer orders.
-              </p>
-            </div>
-          ) : (
-            <div className="mt-5">
-              <h2 className="text-xl font-semibold text-[#252525]">
-                Customer Dashboard
-              </h2>
-
-              <p className="mt-2 text-gray-500">
-                Explore delicious pizzas and manage your orders.
-              </p>
-            </div>
+          {/* Customer Dashboard */}
+          {role === "customer" && (
+            <CustomerDashboard name={user.name} />
           )}
 
-          <div className="mt-8 rounded-xl bg-orange-50 p-5">
-            <p className="text-sm text-gray-500">Your Account Role</p>
+          {/* Vendor Dashboard */}
+          {role === "vendor" && (
+            <VendorDashboard name={user.name} />
+          )}
 
-            <p className="mt-1 text-lg font-bold capitalize text-[#F77F00]">
-              {role}
-            </p>
-          </div>
+          {/* Admin Dashboard */}
+          {role === "admin" && (
+            <AdminDashboard name={user.name} />
+          )}
+
+          {/* Unauthorized Role */}
+          {role !== "customer" &&
+            role !== "vendor" &&
+            role !== "admin" && (
+              <div className="rounded-2xl bg-white p-8 text-center shadow-sm">
+                <h1 className="text-2xl font-bold text-red-600">
+                  Access Denied
+                </h1>
+
+                <p className="mt-3 text-gray-500">
+                  You do not have permission to access this dashboard.
+                </p>
+              </div>
+            )}
 
         </div>
-      </div>
-    </main>
+      </main>
+
+      <Footer />
+    </>
   );
 }

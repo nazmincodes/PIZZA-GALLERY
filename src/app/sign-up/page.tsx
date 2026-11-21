@@ -18,29 +18,59 @@ import { authClient } from "@/lib/auth-client";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import { toast } from "sonner";
+type AccountRole = "customer" | "vendor";
 
 export default function SignUpPage() {
     const router = useRouter();
 
-    const [data, setData] = useState({
+    const [data, setData] = useState<{
+        name: string;
+        email: string;
+        password: string;
+        role: AccountRole;
+    }>({
         name: "",
         email: "",
         password: "",
         role: "customer",
     });
-
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [imageFile, setImageFile] = useState<File | null>(null);
 
-
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
 
-        setData((previousData) => ({
-            ...previousData,
-            [name]: value,
-        }));
+        if (name === "role") {
+            if (value !== "customer" && value !== "vendor") return;
+
+            setData((previousData) => ({
+                ...previousData,
+                role: value,
+            }));
+            return;
+        }
+
+        if (name === "name") {
+            setData((previousData) => ({
+                ...previousData,
+                name: value,
+            }));
+        }
+
+        if (name === "email") {
+            setData((previousData) => ({
+                ...previousData,
+                email: value,
+            }));
+        }
+
+        if (name === "password") {
+            setData((previousData) => ({
+                ...previousData,
+                password: value,
+            }));
+        }
     };
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,15 +130,15 @@ export default function SignUpPage() {
                 imageUrl = await uploadImage(imageFile);
             }
 
+
             const { error } = await authClient.signUp.email({
                 name: data.name,
                 email: data.email,
                 password: data.password,
-                role: data.role,
+                accountType: data.role,
                 image: imageUrl,
                 callbackURL: "/dashboard",
             });
-
             // বাকি অংশ আগের মতোই থাকবে
 
             if (error) {
@@ -293,7 +323,7 @@ export default function SignUpPage() {
                                     <input
                                         id="profileImage"
                                         type="file"
-                                        accept="image/*"
+                                        onChange={handleImageChange}
                                         className="w-full text-sm text-gray-500 file:mr-3 file:rounded-lg file:border-0 file:bg-orange-100 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-orange-700"
                                     />
                                 </div>
@@ -307,8 +337,8 @@ export default function SignUpPage() {
 
                                 <div className="grid grid-cols-2 gap-3">
                                     <label className={`cursor-pointer rounded-xl border p-4 transition ${data.role === "customer"
-                                            ? "border-orange-500 bg-orange-50"
-                                            : "border-gray-200 hover:border-orange-300"
+                                        ? "border-orange-500 bg-orange-50"
+                                        : "border-gray-200 hover:border-orange-300"
                                         }`}>
                                         <input
                                             type="radio"
@@ -329,8 +359,8 @@ export default function SignUpPage() {
                                     </label>
 
                                     <label className={`cursor-pointer rounded-xl border p-4 transition ${data.role === "vendor"
-                                            ? "border-orange-500 bg-orange-50"
-                                            : "border-gray-200 hover:border-orange-300"
+                                        ? "border-orange-500 bg-orange-50"
+                                        : "border-gray-200 hover:border-orange-300"
                                         }`}>
                                         <input
                                             type="radio"

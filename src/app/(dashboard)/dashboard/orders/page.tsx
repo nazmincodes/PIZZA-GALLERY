@@ -71,28 +71,40 @@ export default function VendorOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  const fetchOrders = async () => {
-    try {
-      setLoading(true);
-
-      const result = await apiRequest("/api/orders/vendor-orders");
-
-      setOrders(result.orders || []);
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Failed to load orders."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Fetch Vendor Orders
   useEffect(() => {
-    fetchOrders();
+    let isMounted = true;
+
+    const loadOrders = async () => {
+      try {
+        const result = await apiRequest("/api/orders/vendor-orders");
+
+        if (isMounted) {
+          setOrders(result.orders || []);
+        }
+      } catch (error) {
+        if (isMounted) {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Failed to load orders."
+          );
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadOrders();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
+  // Accept or Reject Order
   const handleStatusChange = async (
     orderId: string,
     newStatus: "accepted" | "rejected"
@@ -117,8 +129,7 @@ export default function VendorOrdersPage() {
       );
 
       toast.success(
-        result.message ||
-          `Order ${newStatus} successfully!`
+        result.message || `Order ${newStatus} successfully!`
       );
     } catch (error) {
       toast.error(
@@ -135,9 +146,11 @@ export default function VendorOrdersPage() {
     const customerName =
       order.customer?.name || order.customerName || "";
 
+    const searchText = search.toLowerCase();
+
     const matchesSearch =
-      customerName.toLowerCase().includes(search.toLowerCase()) ||
-      order.pizzaName.toLowerCase().includes(search.toLowerCase());
+      customerName.toLowerCase().includes(searchText) ||
+      order.pizzaName.toLowerCase().includes(searchText);
 
     const matchesFilter =
       filter === "All" || order.status === filter;
@@ -212,6 +225,7 @@ export default function VendorOrdersPage() {
             </p>
           </div>
 
+          {/* Statistics */}
           <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {statistics.map((stat) => {
               const Icon = stat.icon;
@@ -229,13 +243,14 @@ export default function VendorOrdersPage() {
                   </div>
 
                   <h2 className={`mt-3 text-3xl font-bold ${stat.color}`}>
-                    {stat.value}
+                    {loading ? "..." : stat.value}
                   </h2>
                 </div>
               );
             })}
           </div>
 
+          {/* Search and Filter */}
           <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-orange-100 bg-white p-4 sm:flex-row">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
@@ -265,6 +280,7 @@ export default function VendorOrdersPage() {
             </select>
           </div>
 
+          {/* Orders */}
           {loading ? (
             <div className="rounded-2xl bg-white py-16 text-center text-gray-500">
               Loading orders...
@@ -293,6 +309,10 @@ export default function VendorOrdersPage() {
                   order.customer?.email ||
                   order.customerEmail ||
                   "Not available";
+
+                const customerPhone =
+                  order.customer?.phone ||
+                  order.customerPhone;
 
                 return (
                   <div
@@ -341,14 +361,11 @@ export default function VendorOrdersPage() {
                           {customerEmail}
                         </p>
 
-                        {order.customer?.phone ||
-                        order.customerPhone ? (
+                        {customerPhone && (
                           <p className="mt-1 text-sm text-gray-500">
-                            Phone:{" "}
-                            {order.customer?.phone ||
-                              order.customerPhone}
+                            Phone: {customerPhone}
                           </p>
-                        ) : null}
+                        )}
 
                         <p className="mt-3 flex items-center gap-2 text-sm text-gray-500">
                           <MapPin className="h-4 w-4 text-[#F77F00]" />
@@ -382,6 +399,7 @@ export default function VendorOrdersPage() {
                       </div>
                     </div>
 
+                    {/* Customer Message */}
                     <div className="mt-5 rounded-xl bg-orange-50 p-4">
                       <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
                         Customer Message
@@ -392,6 +410,7 @@ export default function VendorOrdersPage() {
                       </p>
                     </div>
 
+                    {/* Order Actions */}
                     <div className="mt-5 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                       <p className="text-xl font-bold text-[#252525]">
                         Total: ৳{order.totalPrice}
@@ -402,24 +421,20 @@ export default function VendorOrdersPage() {
                           <Button
                             disabled={updatingId === order._id}
                             onClick={() =>
-                              handleStatusChange(
-                                order._id,
-                                "accepted"
-                              )
+                              handleStatusChange(order._id, "accepted")
                             }
                             className="bg-green-600 text-white hover:bg-green-700"
                           >
                             <CheckCircle className="mr-2 h-4 w-4" />
-                            Accept
+                            {updatingId === order._id
+                              ? "Updating..."
+                              : "Accept"}
                           </Button>
 
                           <Button
                             disabled={updatingId === order._id}
                             onClick={() =>
-                              handleStatusChange(
-                                order._id,
-                                "rejected"
-                              )
+                              handleStatusChange(order._id, "rejected")
                             }
                             variant="destructive"
                           >

@@ -23,10 +23,16 @@ interface Pizza {
   price: number;
   category: string;
   image: string;
-  location: string;
-  restaurantName: string;
-  rating: number;
-  isFeatured: boolean;
+  location?: string;
+  restaurantName?: string;
+  rating?: number;
+  isFeatured?: boolean;
+}
+
+interface MenuResponse {
+  success: boolean;
+  message?: string;
+  menuItems: Pizza[];
 }
 
 export default function MenuPage() {
@@ -47,42 +53,65 @@ export default function MenuPage() {
   ];
 
   useEffect(() => {
-    const fetchMenuItems = async () => {
-      try {
-        setLoading(true);
-        setError("");
+    const controller = new AbortController();
 
-        const response = await fetch(`${API_URL}/api/menu/public`);
-        const result = await response.json();
+    const loadMenuItems = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/menu/public`, {
+          signal: controller.signal,
+        });
+
+        const result: MenuResponse = await response.json();
 
         if (!response.ok || !result.success) {
           throw new Error(result.message || "Failed to load menu.");
         }
 
-        setMenuItems(result.menuItems || []);
+        if (!Array.isArray(result.menuItems)) {
+          throw new Error("Invalid menu response from server.");
+        }
+
+        setMenuItems(result.menuItems);
       } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") {
+          return;
+        }
+
         setError(
           error instanceof Error
             ? error.message
             : "Something went wrong."
         );
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
-    fetchMenuItems();
+    void loadMenuItems();
+
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   const locations = [
     "All",
-    ...new Set(menuItems.map((pizza) => pizza.location).filter(Boolean)),
+    ...new Set(
+      menuItems
+        .map((pizza) => pizza.location?.trim())
+        .filter((item): item is string => Boolean(item))
+    ),
   ];
 
   const filteredPizzas = menuItems.filter((pizza) => {
-    const matchesSearch = pizza.name
-      .toLowerCase()
-      .includes(search.toLowerCase());
+    const searchText = search.toLowerCase();
+
+    const matchesSearch =
+      pizza.name.toLowerCase().includes(searchText) ||
+      pizza.description.toLowerCase().includes(searchText) ||
+      pizza.restaurantName?.toLowerCase().includes(searchText);
 
     const matchesCategory =
       category === "All" || pizza.category === category;
@@ -134,7 +163,7 @@ export default function MenuPage() {
                 type="text"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search pizza by name..."
+                placeholder="Search pizza by name or description..."
                 className="h-12 w-full rounded-xl border border-gray-200 bg-[#FFF8F0] pl-12 pr-4 text-sm text-gray-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
               />
             </div>
@@ -212,6 +241,7 @@ export default function MenuPage() {
               <h3 className="text-xl font-bold text-red-600">
                 Failed to Load Menu
               </h3>
+
               <p className="mt-2 text-sm text-gray-500">{error}</p>
             </div>
           ) : filteredPizzas.length > 0 ? (
@@ -247,7 +277,7 @@ export default function MenuPage() {
                         {pizza.category}
                       </span>
 
-                      {pizza.rating > 0 && (
+                      {(pizza.rating ?? 0) > 0 && (
                         <span className="flex items-center gap-1 text-sm font-semibold text-gray-700">
                           <Star
                             size={15}
@@ -268,7 +298,7 @@ export default function MenuPage() {
 
                     <div className="mt-4 flex items-center gap-2 text-xs text-gray-500">
                       <MapPin size={14} className="text-orange-500" />
-                      {pizza.location}
+                      {pizza.location || "Location not available"}
                     </div>
 
                     <div className="mt-5 flex items-center justify-between border-t border-gray-100 pt-4">

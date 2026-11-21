@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -65,26 +66,36 @@ export default function MyItemsPage() {
     const [saving, setSaving] = useState(false);
 
     // Fetch Vendor Items
-    const fetchMyItems = async () => {
-        try {
-            setLoading(true);
-
-            const response = await apiRequest("/api/menu/my-items");
-
-            setItems(response.menuItems || []);
-        } catch (error) {
-            toast.error(
-                error instanceof Error
-                    ? error.message
-                    : "Failed to load menu items."
-            );
-        } finally {
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
-        fetchMyItems();
+        let isMounted = true;
+
+        const loadItems = async () => {
+            try {
+                const response = await apiRequest("/api/menu/my-items");
+
+                if (isMounted) {
+                    setItems(response.menuItems || []);
+                }
+            } catch (error) {
+                if (isMounted) {
+                    toast.error(
+                        error instanceof Error
+                            ? error.message
+                            : "Failed to load menu items."
+                    );
+                }
+            } finally {
+                if (isMounted) {
+                    setLoading(false);
+                }
+            }
+        };
+
+        loadItems();
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     // Open Edit Modal
@@ -176,15 +187,12 @@ export default function MyItemsPage() {
 
             const newStatus = !item.isActive;
 
-            await apiRequest(
-                `/api/menu/${item._id}/availability`,
-                {
-                    method: "PATCH",
-                    body: JSON.stringify({
-                        isActive: newStatus,
-                    }),
-                }
-            );
+            await apiRequest(`/api/menu/${item._id}/availability`, {
+                method: "PATCH",
+                body: JSON.stringify({
+                    isActive: newStatus,
+                }),
+            });
 
             setItems((previousItems) =>
                 previousItems.map((previousItem) =>
