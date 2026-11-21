@@ -1,16 +1,36 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, MapPin, Star, ShoppingBag, CheckCircle2 } from "lucide-react";
+
+import {
+  ArrowLeft,
+  MapPin,
+  Star,
+  ShoppingBag,
+  Clock,
+  ShieldCheck,
+} from "lucide-react";
 
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
-import { menuItems } from "@/data/menuItems";
+
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+type Pizza = {
+  _id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  image: string;
+  location: string;
+  restaurantName: string;
+  rating: number;
+  isFeatured: boolean;
+};
 
 type PizzaDetailsPageProps = {
-  params: Promise<{
-    id: string;
-  }>;
+  params: Promise<{ id: string }>;
 };
 
 export default async function PizzaDetailsPage({
@@ -18,7 +38,25 @@ export default async function PizzaDetailsPage({
 }: PizzaDetailsPageProps) {
   const { id } = await params;
 
-  const pizza = menuItems.find((item) => item.id === id);
+  let pizza: Pizza | undefined;
+
+  try {
+    const response = await fetch(`${API_URL}/api/menu/public`, {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch pizza details.");
+    }
+
+    const result = await response.json();
+
+    pizza = (result.menuItems as Pizza[]).find(
+      (item) => item._id === id
+    );
+  } catch {
+    throw new Error("Unable to load pizza details. Please try again.");
+  }
 
   if (!pizza) {
     notFound();
@@ -28,47 +66,45 @@ export default async function PizzaDetailsPage({
     <>
       <Navbar />
 
-      <main className="flex-1 bg-[#FFF8F0]">
-        <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-
-          {/* Back Button */}
+      <main className="min-h-screen bg-[#FFF8F0] px-4 py-10 sm:py-14">
+        <div className="mx-auto max-w-6xl">
           <Link
             href="/menu"
-            className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-gray-600 transition hover:text-orange-600"
+            className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition hover:text-orange-600"
           >
-            <ArrowLeft size={18} />
+            <ArrowLeft size={17} />
             Back to Menu
           </Link>
 
-          {/* Details Card */}
-          <div className="grid overflow-hidden rounded-3xl border border-orange-100 bg-white shadow-sm lg:grid-cols-2">
-
+          <div className="grid items-center gap-10 lg:grid-cols-2">
             {/* Pizza Image */}
-            <div className="relative min-h-[300px] sm:min-h-[450px]">
-              <Image
-                src={pizza.image}
-                alt={pizza.name}
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover"
-              />
+            <div className="relative aspect-square overflow-hidden rounded-3xl bg-orange-50 shadow-lg">
+              {pizza.image ? (
+                <img
+                  src={pizza.image}
+                  alt={pizza.name}
+                  className="h-full w-full object-cover transition duration-500 hover:scale-105"
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center text-orange-400">
+                  No Image Available
+                </div>
+              )}
 
-              {pizza.badge && (
-                <span className="absolute left-5 top-5 rounded-full bg-orange-500 px-4 py-2 text-sm font-semibold text-white">
-                  {pizza.badge}
+              {pizza.isFeatured && (
+                <span className="absolute left-5 top-5 rounded-full bg-[#F77F00] px-4 py-2 text-sm font-semibold text-white shadow-md">
+                  Featured
                 </span>
               )}
             </div>
 
             {/* Pizza Information */}
-            <div className="flex flex-col justify-center p-6 sm:p-10 lg:p-12">
-
-              <span className="w-fit rounded-full bg-orange-50 px-4 py-2 text-sm font-semibold text-orange-600">
+            <div>
+              <span className="inline-block rounded-full bg-orange-100 px-4 py-2 text-sm font-semibold text-orange-600">
                 {pizza.category}
               </span>
 
-              <h1 className="mt-5 text-3xl font-bold leading-tight text-[#252525] sm:text-4xl">
+              <h1 className="mt-5 text-3xl font-extrabold leading-tight text-[#252525] sm:text-4xl lg:text-5xl">
                 {pizza.name}
               </h1>
 
@@ -76,60 +112,83 @@ export default async function PizzaDetailsPage({
                 {pizza.description}
               </p>
 
+              {/* Restaurant */}
+              <p className="mt-4 text-sm font-semibold text-gray-700">
+                Restaurant: {pizza.restaurantName}
+              </p>
+
               {/* Rating and Location */}
-              <div className="mt-7 flex flex-wrap items-center gap-5">
-                {pizza.rating && (
+              <div className="mt-6 flex flex-wrap items-center gap-5">
+                {pizza.rating > 0 && (
                   <div className="flex items-center gap-2">
                     <Star
                       size={19}
                       className="fill-yellow-400 text-yellow-400"
                     />
-                    <span className="text-sm font-semibold text-gray-700">
-                      {pizza.rating} Rating
+
+                    <span className="font-semibold text-[#252525]">
+                      {pizza.rating}
+                    </span>
+
+                    <span className="text-sm text-gray-400">
+                      Customer Rating
                     </span>
                   </div>
                 )}
 
                 {pizza.location && (
-                  <div className="flex items-center gap-2">
-                    <MapPin size={18} className="text-orange-500" />
-                    <span className="text-sm text-gray-600">
-                      {pizza.location}
-                    </span>
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <MapPin size={17} className="text-orange-500" />
+                    {pizza.location}
                   </div>
                 )}
               </div>
 
               {/* Features */}
-              <div className="mt-8 space-y-4 border-t border-gray-100 pt-7">
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <CheckCircle2 size={19} className="text-green-500" />
-                  Freshly prepared pizza
+              <div className="my-8 grid gap-4 border-y border-orange-100 py-6 sm:grid-cols-2">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-xl bg-orange-100 p-3">
+                    <Clock className="text-orange-600" size={21} />
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-semibold text-[#252525]">
+                      Freshly Prepared
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      Made with fresh ingredients
+                    </p>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <CheckCircle2 size={19} className="text-green-500" />
-                  Quality ingredients
-                </div>
+                <div className="flex items-center gap-3">
+                  <div className="rounded-xl bg-orange-100 p-3">
+                    <ShieldCheck className="text-orange-600" size={21} />
+                  </div>
 
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <CheckCircle2 size={19} className="text-green-500" />
-                  Delivered from local pizza shops
+                  <div>
+                    <p className="text-sm font-semibold text-[#252525]">
+                      Trusted Restaurant
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      Quality-focused service
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {/* Price and Order Button */}
-              <div className="mt-9 flex flex-col gap-5 border-t border-gray-100 pt-7 sm:flex-row sm:items-center sm:justify-between">
+              {/* Price and Order */}
+              <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-sm text-gray-500">Price</p>
-                  <p className="mt-1 text-3xl font-bold text-orange-600">
+                  <p className="text-sm text-gray-400">Price</p>
+                  <p className="text-3xl font-extrabold text-[#F77F00]">
                     ৳{pizza.price}
                   </p>
                 </div>
 
                 <Link
-                  href="/sign-in"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-orange-100 transition hover:bg-orange-600"
+                  href={`/menu/${pizza._id}/order`}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#F77F00] px-8 py-4 font-semibold text-white shadow-md transition hover:bg-orange-600 hover:shadow-lg"
                 >
                   <ShoppingBag size={19} />
                   Order Now
@@ -137,7 +196,7 @@ export default async function PizzaDetailsPage({
               </div>
             </div>
           </div>
-        </section>
+        </div>
       </main>
 
       <Footer />
