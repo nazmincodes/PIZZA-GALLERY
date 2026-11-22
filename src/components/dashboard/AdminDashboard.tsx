@@ -15,6 +15,7 @@ import {
   Settings,
   Loader2,
   RefreshCw,
+  AlertCircle,
 } from "lucide-react";
 
 import { apiRequest } from "@/lib/api";
@@ -61,71 +62,58 @@ export default function AdminDashboard({
   const [error, setError] = useState("");
 
   const fetchDashboardData = async () => {
-    try {
-      setLoading(true);
-      setError("");
+    setLoading(true);
+    setError("");
 
-      const [
-        usersResponse,
-        vendorsResponse,
-        menuStatsResponse,
-        pendingMenuResponse,
-        transactionResponse,
-      ] = await Promise.all([
-        apiRequest("/api/admin/users"),
-        apiRequest("/api/admin/vendors/statistics"),
-        apiRequest("/api/admin/menu/statistics"),
-        apiRequest("/api/admin/menu/pending"),
-        apiRequest("/api/admin/transactions/statistics"),
-      ]);
+    const results = await Promise.allSettled([
+      apiRequest("/api/admin/overview"),
+      apiRequest("/api/admin/menu/pending"),
+    ]);
 
-      const users = usersResponse.users || [];
+    const overviewResult = results[0];
+    const pendingResult = results[1];
 
-      const vendorStats =
-        vendorsResponse.statistics || vendorsResponse;
+    let hasError = false;
 
-      const menuStats =
-        menuStatsResponse.statistics || menuStatsResponse;
-
-      const transactionStats =
-        transactionResponse.statistics || transactionResponse;
-
-      const pendingList =
-        pendingMenuResponse.menuItems ||
-        pendingMenuResponse.items ||
-        pendingMenuResponse.data ||
-        [];
-
-      const totalCustomers = users.filter(
-        (user: { role?: string }) =>
-          user.role?.toLowerCase() === "customer"
-      ).length;
+    if (overviewResult.status === "fulfilled") {
+      const overview =
+        overviewResult.value.statistics || overviewResult.value;
 
       setStats({
-        totalUsers: usersResponse.total ?? users.length,
-        totalVendors: vendorStats.totalVendors ?? 0,
-        totalCustomers,
-        totalMenuItems: menuStats.totalMenuItems ?? 0,
-        pendingApprovals:
-          menuStats.pendingMenuItems ??
-          pendingMenuResponse.count ??
-          pendingList.length,
-        totalTransactions:
-          transactionStats.totalTransactions ?? 0,
+        totalUsers: overview.totalUsers ?? 0,
+        totalVendors: overview.totalVendors ?? 0,
+        totalCustomers: overview.totalCustomers ?? 0,
+        totalMenuItems: overview.totalMenuItems ?? 0,
+        pendingApprovals: overview.pendingApprovals ?? 0,
+        totalTransactions: overview.totalTransactions ?? 0,
       });
+    } else {
+      hasError = true;
+      console.error("Overview API error:", overviewResult.reason);
+    }
+
+    if (pendingResult.status === "fulfilled") {
+      const response = pendingResult.value;
+
+      const pendingList =
+        response.menuItems ||
+        response.items ||
+        response.data ||
+        [];
 
       setPendingItems(pendingList);
-    } catch (err) {
-      console.error("Admin dashboard error:", err);
-
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to load dashboard data."
-      );
-    } finally {
-      setLoading(false);
+    } else {
+      hasError = true;
+      console.error("Pending menu API error:", pendingResult.reason);
     }
+
+    if (hasError) {
+      setError(
+        "Some dashboard information could not be loaded. Please refresh."
+      );
+    }
+
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -173,7 +161,6 @@ export default function AdminDashboard({
 
   return (
     <div className="space-y-8">
-
       {/* Welcome Section */}
       <section className="relative overflow-hidden rounded-3xl bg-[#252525] p-8 text-white md:p-10">
         <div className="relative z-10 max-w-2xl">
@@ -206,7 +193,7 @@ export default function AdminDashboard({
         />
       </section>
 
-      {/* Statistics */}
+      {/* Platform Overview */}
       <section>
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -215,7 +202,7 @@ export default function AdminDashboard({
             </h2>
 
             <p className="mt-1 text-sm text-gray-500">
-              Monitor the overall performance of PizzaHub.
+              Live statistics from your PizzaHub database.
             </p>
           </div>
 
@@ -233,12 +220,15 @@ export default function AdminDashboard({
         </div>
 
         {error && (
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
-            <p>{error}</p>
+          <div className="mb-5 flex items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+            <div className="flex items-center gap-2">
+              <AlertCircle size={18} />
+              <p>{error}</p>
+            </div>
 
             <button
               onClick={fetchDashboardData}
-              className="font-semibold underline"
+              className="shrink-0 font-semibold underline"
             >
               Try again
             </button>
@@ -286,14 +276,13 @@ export default function AdminDashboard({
         </div>
       </section>
 
-      {/* Admin Quick Actions */}
+      {/* Quick Actions */}
       <section>
         <h2 className="mb-5 text-2xl font-bold text-[#252525]">
           Administration
         </h2>
 
         <div className="grid gap-5 md:grid-cols-3">
-
           <Link
             href="/dashboard/users"
             className="flex items-center gap-4 rounded-2xl border border-orange-100 bg-white p-5 transition hover:border-orange-300 hover:shadow-md"
@@ -347,7 +336,6 @@ export default function AdminDashboard({
               </p>
             </div>
           </Link>
-
         </div>
       </section>
 
@@ -434,7 +422,7 @@ export default function AdminDashboard({
         )}
       </section>
 
-      {/* Settings */}
+      {/* Platform Settings */}
       <Link
         href="/dashboard/settings"
         className="flex items-center justify-between rounded-2xl border border-orange-100 bg-white p-6 transition hover:border-orange-300 hover:shadow-md"
@@ -457,7 +445,6 @@ export default function AdminDashboard({
 
         <ArrowUpRight className="text-gray-400" />
       </Link>
-
     </div>
   );
 }
