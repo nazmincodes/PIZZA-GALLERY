@@ -9,7 +9,7 @@ import Footer from "@/components/shared/Footer";
 import CustomerDashboard from "@/components/dashboard/CustomerDashboard";
 import VendorDashboard from "@/components/dashboard/VendorDashboard";
 import AdminDashboard from "@/components/dashboard/AdminDashboard";
-
+export const instant = false;
 export default async function DashboardPage() {
   const session = await auth.api.getSession({
     headers: await headers(),
