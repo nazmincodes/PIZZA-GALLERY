@@ -18,8 +18,8 @@ export const auth = betterAuth({
 
         jwt({
             jwt: {
-                issuer: "http://localhost:3000",
-                audience: "http://localhost:3000",
+                issuer: "https://pizzahub-client-sandy.vercel.app",
+                audience: "https://pizzahub-client-sandy.vercel.app",
                 expirationTime: "15m",
 
                 definePayload: ({ user }) => ({
