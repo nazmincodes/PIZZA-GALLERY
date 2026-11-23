@@ -1,36 +1,216 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🍕 PizzaHub — Pizza Ordering & Management Platform
 
-### Getting Started
+PizzaHub is a full-stack pizza ordering and management platform designed to connect customers, vendors, and administrators through a seamless digital experience.
 
-First, run the development server:
+Customers can explore pizzas, place orders, and manage their accounts. Vendors can manage their menus and orders, while administrators can oversee platform activities and subscriptions.
 
-`````bash
+## 🌐 Live Demo
+
+**Live Website:** [Add Your Frontend Live URL]
+
+**Backend API:** [Add Your Backend API URL]
+
+## ✨ Key Features
+
+### 👤 Authentication & Authorization
+- Email and password authentication.
+- Google authentication.
+- Role-based access control.
+- Separate dashboards for customers, vendors, and administrators.
+- Secure user sessions.
+
+### 🍕 Customer Features
+- Browse available pizza items.
+- Explore pizza details and categories.
+- Place pizza orders.
+- Track order information.
+- Manage customer profile.
+- Access personal dashboard.
+
+### 🏪 Vendor Features
+- Dedicated vendor dashboard.
+- Manage pizza menu items.
+- Add, update, and manage products.
+- Manage incoming orders.
+- View vendor-specific information.
+- Access subscription details.
+
+### 🛠️ Admin Features
+- Dedicated admin dashboard.
+- Manage platform users and vendors.
+- Monitor orders and platform activities.
+- Manage vendor subscriptions.
+- View subscription status and payment history.
+- Access platform management information.
+
+### 💳 Subscription & Payment
+- Free and Premium subscription plans.
+- Stripe payment integration.
+- Subscription status management.
+- Subscription start and expiry information.
+- Payment history tracking.
+
+## 🧰 Technology Stack
+
+### Frontend
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- DaisyUI
+
+### Backend
+- Node.js
+- Express.js
+- TypeScript
+- MongoDB
+
+### Authentication & Security
+- Better Auth
+- Google OAuth
+- JWT
+
+### Payment
+- Stripe
+
+### Additional Services
+- ImgBB — Image Hosting
+- Resend — Email Service
+- Vercel — Deployment
+
+## 📁 Project Structure
+
+```text
+pizzahub-client/
+│
+├── public/
+│
+├── src/
+│   ├── app/
+│   │   ├── api/
+│   │   ├── dashboard/
+│   │   ├── menu/
+│   │   ├── login/
+│   │   └── register/
+│   │
+│   ├── components/
+│   ├── context/
+│   ├── hooks/
+│   ├── lib/
+│   └── types/
+│
+├── .env
+├── package.json
+└── README.md
+```
+
+## ⚙️ Installation & Setup
+
+### 1. Clone the Repository
+
+```bash
+git clone YOUR_FRONTEND_REPOSITORY_URL
+```
+
+### 2. Navigate to the Project
+
+```bash
+cd pizzahub-client
+```
+
+### 3. Install Dependencies
+
+```bash
+npm install
+```
+
+### 4. Configure Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+BETTER_AUTH_SECRET=your_better_auth_secret
+MONGODB_URL=your_mongodb_connection_string
+BETTER_AUTH_URL=http://localhost:3000
+
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+
+NEXT_PUBLIC_IMGBB_API_KEY=your_imgbb_api_key
+RESEND_API_KEY=your_resend_api_key
+
+NEXT_PUBLIC_API_URL=http://localhost:5000
+```
+
+**Important:** Never upload your actual environment variables or secret keys to GitHub.
+
+### 5. Start the Development Server
+
+```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-``````
+```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open your browser and visit:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Backend Setup
 
-## Learn More....
+The backend runs as a separate Express.js application.
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+git clone YOUR_BACKEND_REPOSITORY_URL
+cd pizzahub-server
+npm install
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Configure the backend environment variables before starting the server.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run dev
+```
 
-## Deploy on Vercel
+Make sure both frontend and backend servers are running during local development.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔐 User Roles
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.***
+| Role | Responsibilities |
+|---|---|
+| Customer | Browse pizzas, place orders, manage profile |
+| Vendor | Manage menu items, orders, and subscriptions |
+| Admin | Manage users, vendors, and platform activities |
+
+## 💳 Payment Integration
+
+PizzaHub uses Stripe to support subscription payments.
+
+Vendors can access subscription plans and manage their Premium membership through the platform.
+
+## 🌍 Deployment
+
+- Frontend: Vercel
+- Backend: Vercel
+- Database: MongoDB Atlas
+
+## 🎯 Project Goals
+
+- Build a complete full-stack pizza ordering platform.
+- Implement role-based dashboards.
+- Integrate secure authentication.
+- Connect frontend and backend APIs.
+- Implement subscription and payment functionality.
+- Develop a responsive and user-friendly interface.
+
+## 👩‍💻 Developer
+
+**Nazmin Akter**
+
+Computer Science & Engineering Student
+
+Interested in Full-Stack Web Development and MERN Stack Technologies.
+
+---
+
+⭐ If you find this project interesting, feel free to explore the repository!
