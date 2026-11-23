@@ -10,10 +10,18 @@ import CustomerDashboard from "@/components/dashboard/CustomerDashboard";
 import VendorDashboard from "@/components/dashboard/VendorDashboard";
 import AdminDashboard from "@/components/dashboard/AdminDashboard";
 export const instant = false;
+
 export default async function DashboardPage() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  let session;
+
+  try {
+    session = await auth.api.getSession({
+      headers: await headers(),
+    });
+  } catch (error) {
+    console.error("DASHBOARD getSession ERROR:", error);
+    throw error;
+  }
 
   // Redirect if user is not logged in
   if (!session) {
@@ -21,10 +29,9 @@ export default async function DashboardPage() {
   }
 
   const user = session.user;
-
-  // Safely read user role
   const role = user.role;
 
+  // নিচের return অংশ আগের মতোই থাকবে
   return (
     <>
       <Navbar />
