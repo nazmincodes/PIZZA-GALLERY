@@ -205,7 +205,7 @@ Vendors can access subscription plans and manage their Premium membership throug
 
 ## 👩‍💻 Developer
 
-**Nazmin Akter**
+***Nazmin Akter***
 
 Computer Science & Engineering Student
 
